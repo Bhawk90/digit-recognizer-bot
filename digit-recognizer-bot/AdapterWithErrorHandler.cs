@@ -8,7 +8,7 @@ using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace digit_recognizer_bot
+namespace DigitRecognizerBot
 {
     public class AdapterWithErrorHandler : BotFrameworkHttpAdapter
     {

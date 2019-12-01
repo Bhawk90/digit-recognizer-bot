@@ -6,7 +6,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace digit_recognizer_bot
+namespace DigitRecognizerBot
 {
     public class Program
     {

@@ -11,15 +11,29 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using digit_recognizer_bot.Bots;
+using DigitRecognizerBot.Bots;
+using DigitRecognizerBot.Services;
 
-namespace digit_recognizer_bot
+namespace DigitRecognizerBot
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration) => Configuration = configuration;
+
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+            if (env.IsDevelopment())
+            {
+                builder.AddUserSecrets<Startup>();
+            }
+
+            builder.AddEnvironmentVariables();
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -32,8 +46,12 @@ namespace digit_recognizer_bot
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
+            // Configurations
+            services.Configure<MLStudioDigitRecognizerConfiguration>(Configuration.GetSection("DigitRecognizer"));
+
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, EchoBot>();
+            services.AddTransient<IDigitRecognizer, MLStudioDigitRecognizer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
